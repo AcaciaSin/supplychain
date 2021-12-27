@@ -1,0 +1,24 @@
+
+[Network]
+#type rpc or channel
+Type="channel"
+CAFile="/home/fisco/nodes/127.0.0.1/sdk/ca.crt"
+Cert="/home/fisco/nodes/127.0.0.1/sdk/sdk.crt"
+Key="/home/fisco/nodes/127.0.0.1/sdk/sdk.key"
+[[Network.Connection]]
+NodeURL="127.0.0.1:20200"
+GroupID=1
+# [[Network.Connection]]
+# NodeURL="127.0.0.1:20200"
+# GroupID=2
+
+[Account]
+# only support PEM format for now
+KeyFile="utils/fiscoapi/.ci/0x83309d045a19c44dc3722d15a6abd472f95866ac.pem"
+
+[Chain]
+ChainID=1
+SMCrypto=false
+
+[log]
+Path="utils/fiscoapi/log"
