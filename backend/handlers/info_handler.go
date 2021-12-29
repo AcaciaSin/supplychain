@@ -7,6 +7,32 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func getAccountInfo(c *gin.Context) {
+	role, _ := c.Cookie("addrRole")
+	addr, _ := c.Cookie("addr")
+	data := gin.H{}
+	if role == "admin" {
+		admin, err := contractAPI.GetAdmin()
+		if err != nil {
+			sendData(c, http.StatusInternalServerError, gin.H{}, "区块链执行异常")
+		}
+		data = gin.H{"info": admin}
+	} else if role == "bank" {
+		bank, err := contractAPI.GetBank(common.HexToAddress(addr))
+		if err != nil {
+			sendData(c, http.StatusInternalServerError, gin.H{}, "区块链执行异常")
+		}
+		data = gin.H{"info": bank}
+	} else if role == "company" {
+		company, err := contractAPI.GetCompany(common.HexToAddress(addr))
+		if err != nil {
+			sendData(c, http.StatusInternalServerError, gin.H{}, "区块链执行异常")
+		}
+		data = gin.H{"info": company}
+	}
+	sendData(c, http.StatusOK, data, "获取账户信息成功")
+}
+
 func getAllBanks(c *gin.Context) {
 	bank, err := contractAPI.GetAllBanks()
 	if err != nil {
@@ -86,6 +112,7 @@ func getBillFromMe(c *gin.Context) {
 	}
 	sendData(c, http.StatusOK, gin.H{"bill": bill}, "获取应付账单成功")
 }
+
 func getBillToMe(c *gin.Context) {
 	operatorAddr, _ := c.Cookie("addr")
 	bill, err := contractAPI.GetBillTo(common.HexToAddress(operatorAddr))
