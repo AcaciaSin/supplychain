@@ -4,11 +4,11 @@
 
 ## 大作业项目：基于区块链的供应链金融平台
 
-|      |      |      |
-| ---- | ---- | ---- |
-|      |      |      |
-|      |      |      |
-|      |      |      |
+|  姓名  |   年级专业   |   学号   |
+| :----: | :----------: | :------: |
+| 冼子婷 | 19级软件工程 |          |
+| 廖雨轩 | 19级软件工程 |          |
+| 胡文浩 | 19级软件工程 | 18346019 |
 
 # 一、项目背景
 
@@ -21,7 +21,7 @@
 
 # 二、方案设计
 
-## 项目要求
+# 项目要求
 
 - 功能一：实现采购商品—签发应收账款交易上链。例如车企从轮胎公司购买一批轮胎并签订应收账款单据。 
 
@@ -31,66 +31,93 @@
 
 - 功能四：应收账款支付结算上链，应收账款单据到期时核心企业向下游企业支付相应的欠款。
 
-## 具体设计
+# 具体设计
 
-### 系统流通资源
+## 系统流通资源
 
-- 信用值（credit）：由于信用不可衡量，因此在系统中使用**信用值**可以度量的概念来表示企业的可信用程度。简单来说，信用值表示这个企业在规定有限时间内能够偿还的估计金额。
+- 信用值（credit）：由于信用本身不可衡量，因此在系统中使用**信用值**可以度量的概念来表示企业的可信用程度。简单来说，信用值表示这个企业在规定有限时间内能够偿还的估计金额。信用值的使用需要经过收款方的同意，才能够生成一笔与信用值相关的账单。
+- 资金（funding）：资金是一个企业或者银行能够在这个系统中自由使用的资源，其可以由另外的系统，将一定的法定货币如人民币、美金等转换为其中的等价的资金值。
 
-### 系统角色
+## 系统角色
 
-- 系统管理员（administrator）：对整个系统进行管理，控制整体信用值的分发以及监控企业之间的借贷情况。在实际情况中，系统管理员一般由政府等监管机构担任。
+- 系统管理员（administrator）：对整个系统进行管理，控制整体信用值的分发以及监控企业之间的借贷情况。在实际情况中，系统管理员一般由政府等监管机构担任。考虑到这类监管机构拥有其他强制手段来进行系统中的交易控制，因此在系统中只给管理员提供一些更高级的查询功能，但是将不会参与或者干涉其中的交易情况。
+
+  ```solidity
+  struct Administrator {
+  	address addr;			// 管理员地址
+  	uint256 creditProvided;	// 管理员发放的信用值数目
+  }
+  ```
+
 - 银行（bank）：为了简化概念和方便实现，在我们的系统中的金融机构仅使用银行作为代表。作为金融机构，银行可以对企业进行认证和信用值分发的操作
+
+  ```solidity
+  struct Bank {
+  	address addr;		// 地址
+  	string 	name;		// 名称
+  	uint256 credit;		// 可发放信用值
+  	uint256 funding;	// 可用资金
+  }
+  ```
+
 - 企业（company）：企业可分为以下两种类型
   - 核心企业（core company）：核心企业在金融机构中有相当的信用程度，金融机构可认为其有能力进行还贷的能力，因此可以允许其发起的融资请求
   - 普通企业（normal company）：普通企业的信用程度仍未达到金融机构的认可标准，暂时不可向金融机构发起融资请求。若后续该企业得到金融机构的认可，也可以升级为核心企业。
+  
+  ```solidity
+  struct Company {
+  	address addr;			// 地址
+  	string 	name;			// 名称
+  	uint256 companyType;	// 企业类型
+  	uint256 credit;			// 信用值
+      uint256 funding;		// 可用资金
+  }
+  
+  uint256 companyTypeNormal = 0;	// 普通企业
+  uint256 companyTypeCore = 1;	// 核心企业
+  ```
 
-### 存储设计
+## 存储设计
 
-使用 FISCO-BCSO 自身提供的 Table.sol 分布式数据库合约作为系统的存储功能，因此我们只需要设计系统的存储结构即可，无需额外部署数据库对地址信息或者信用值进行记录。
+### Table.sol
 
-#### 管理员
+FISCO-BCSO 中提供了 `Table.sol` 的合约，这个合约可以作为分布式数据库使用，它实现并提供了数据库的基本 CRUD 功能。因此直接在我们系统中直接引用这个合约，直接作为我们的存储系统。接下来只需要设计相对应的存储结构即可，无需额外部署数据库对地址信息、信用值等账户信息或者交易、账单等进行记录。
 
-管理员可以执行，而且是由可信的、权威的机构充当，因此管理员无需记录太多的信息。
-
-```solidity
-struct Administrator {
-	address addr;			// 管理员地址
-	uint256 creditProvided;	// 管理员发放的信用值数目
-}
-```
-
-#### 银行
-
-银行的资金以及信用值在系统中来源于管理员。
-
-```solidity
-struct Bank {
-	address addr;		// 地址
-	string 	name;		// 名称
-	uint256 credit;		// 可发放信用值
-	uint256 funding;	// 可用资金
-}
-```
-
-#### 企业
-
-企业相比于银行只多增加了一项企业类型的字段，同时由于 Table.sol 中不支持用 enum 枚举类型，因此转为使用 uint256 类型来代替枚举类型，用于表示普通企业和核心企业
+为了实现系统功能，使用其中的 TableFacotry 创建以下记录表
 
 ```solidity
-struct Company {
-	address addr;			// 地址
-	string 	name;			// 名称
-	uint256 companyType;	// 企业类型
-	uint256 credit;			// 信用值
-    uint256 funding;		// 可用资金
-}
+TableFactory tf = TableFactory(0x1001);
+tf.createTable(bankTable, "1", "addr,addrStr,name,credit,funding");
+tf.createTable(companyTable, "1", "addr,addrStr,name,companyType,credit,funding");
+tf.createTable(txTable, "1", "txID,from,fromStr,to,toStr,amount,message,txType,txState,billID");
+tf.createTable(billTable, "1", "billID,from,fromStr,to,toStr,amount,createdDate,endDate,message,lock,billState,billType");
 
-uint256 companyTypeNormal = 0;	// 普通企业
-uint256 companyTypeCore = 1;	// 核心企业
+// 当做索引
+tf.createTable(roleTable, "addr", "role");
 ```
 
-#### 交易
+## 交易事件上链
+
+合约中定义了以下 `event`， `event` 为区块链对合约操作进行上链的接口，使用 `emit` 进行调用即可让区块链节点对这个事件打包进入到区块中并广播和共识，这个事件记录到链上。  
+
+```solidity
+// 需要写入到区块链的事件
+event Registration(address operatorAddr, address addr, string role);
+event ProvideCredit(address operatorAddr, address addr, uint256 amount);
+event ProvideFunding(address operatorAddr, address addr, uint256 amount);
+event WithdrawCredit(address operatorAddr, address addr, uint256 amount);
+event Financing(address operatorAddr, address bankAddr, bool useBill, string message);
+event ConfirmFinancing(address bankAddr, uint256 txID, bool accepted);
+event Repay(address operatorAddr, address addr, uint256 amount);
+event TransferBill(address operatorAddr, address from, address newTo, uint256 billID);
+event TransferFunding(address operatorAddr, address to, uint256 amount);	
+```
+
+## 交易与账单结构
+
+### 交易
+
+交易在系统中会对关键操作进行记录，可用于提供接口给监管机构进行操作查询。
 
 ```solidity
 struct Transaction {
@@ -115,7 +142,9 @@ uint256 txStateRefused = 1;		// 拒绝本次交易
 uint256 txStateAccepted = 2;	// 接收本次交易
 ```
 
-#### 账单
+### 账单
+
+账单仅限于被接受的交易，相当于交易双方签订成功的交易，未还账单才表示双方之间存在借账关系。
 
 ```solidity
 struct Bill {
@@ -128,7 +157,7 @@ struct Bill {
     string	message;		// 账单备注信息
     
     uint256 lock;			// 是否锁定，表示该账单是否用于进行转移操作
-    uint256 state;		// 账单状态
+    uint256 state;			// 账单状态
     uint256 billType;		// 账单类型，只有付款人为核心企业才能用于融资
 }
 
@@ -142,3 +171,8 @@ uint256 billTypeNormal = 0; // 普通账单
 uint256 billTypeCore =1;	// 核心企业为付款人的账单
 ```
 
+# 数据流图
+
+# 核心代码
+
+# 界面展示
