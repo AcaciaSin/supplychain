@@ -3,10 +3,10 @@ import axios from "axios";
 
 const API = axios.create({
   withCredentials: true,
-  baseURL: "http://114.115.131.113:8000/",
+  baseURL: "http://114.115.131.113/api",
   headers: {
     "Content-type": "application/json",
-    "Access-Control-Allow-Origin": "http://114.115.131.113/",
+    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers":
       "Origin, X-Requested-With, Content-Type, Accept",
     "Access-Control-Allow-Methods": " GET, POST, PATCH, PUT, DELETE, OPTIONS",
@@ -209,9 +209,10 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          // getCoreCompany();
-          // getNormalCompany();
-          // getBanks();
+          getCoreCompany();
+          getMyinfo();
+          getNormalCompany();
+          getBanks();
           setSuccess(response.data.msg);
         }
       })
@@ -227,9 +228,10 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          // getCoreCompany();
-          // getNormalCompany();
-          // getBanks();
+          getCoreCompany();
+          getMyinfo();
+          getNormalCompany();
+          getBanks();
           setSuccess(response.data.msg);
         }
       })
@@ -245,9 +247,10 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          // getCoreCompany();
-          // getNormalCompany();
-          // getBanks();
+          getCoreCompany();
+          getMyinfo();
+          getNormalCompany();
+          getBanks();
           setSuccess(response.data.msg);
         }
       })
@@ -263,6 +266,13 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
+          getCoreCompany();
+          getNormalCompany();
+          getBanks();
+          getBills();
+          getMyinfo();
+          getMyToBills();
+          getMyFromBills();
         }
       })
       .catch((err) => {
@@ -278,6 +288,13 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
+          getCoreCompany();
+          getNormalCompany();
+          getBanks();
+          getBills();
+          getMyinfo();
+          getMyToBills();
+          getMyFromBills();
         }
       })
       .catch((err) => {
@@ -295,6 +312,13 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
+          getCoreCompany();
+          getNormalCompany();
+          getBanks();
+          getBills();
+          getMyinfo();
+          getMyToBills();
+          getMyFromBills();
         }
       })
       .catch((err) => {
@@ -313,7 +337,13 @@ export function AuthProvider({ children }) {
         if (response.status === 200) {
           setSuccess(response.data.msg);
           getTransactions();
+          getCoreCompany();
+          getNormalCompany();
+          getBanks();
           getBills();
+          getMyToBills();
+          getMyinfo();
+          getMyFromBills();
         }
       })
       .catch((err) => {
@@ -331,7 +361,13 @@ export function AuthProvider({ children }) {
         if (response.status === 200) {
           setSuccess(response.data.msg);
           getTransactions();
+          getCoreCompany();
+          getNormalCompany();
+          getBanks();
           getBills();
+          getMyToBills();
+          getMyFromBills();
+          getMyinfo();
         }
       })
       .catch((err) => {
