@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API = axios.create({
   withCredentials: true,
-  baseURL: "http://114.115.131.113:8000/api/",
+  baseURL: "http://114.115.131.113/api/",
   headers: {
     "Content-type": "application/json",
     "Access-Control-Allow-Origin": "http://114.115.131.113/",
