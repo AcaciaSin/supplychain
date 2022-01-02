@@ -46,12 +46,12 @@ func getAllBanks(c *gin.Context) {
 }
 
 func getAllTx(c *gin.Context) {
-	bank, err := contractAPI.GetAllTx()
+	transaction, err := contractAPI.GetAllTx()
 	if err != nil {
 		sendData(c, http.StatusInternalServerError, gin.H{}, "区块链执行异常")
 	}
 	sendData(c, http.StatusOK, gin.H{
-		"bank": bank,
+		"transaction": transaction,
 	},
 		"获取所有交易成功",
 	)
@@ -87,7 +87,7 @@ func getAllBills(c *gin.Context) {
 		sendData(c, http.StatusInternalServerError, gin.H{}, "区块链执行异常")
 	}
 	sendData(c, http.StatusOK, gin.H{
-		"bank": bill,
+		"bill": bill,
 	},
 		"获取所有账单成功",
 	)
@@ -100,7 +100,7 @@ func getMyTx(c *gin.Context) {
 		sendData(c, http.StatusForbidden, gin.H{}, "获取自己相关交易失败")
 		return
 	}
-	sendData(c, http.StatusOK, gin.H{"tansaction": tx}, "获取自己相关交易成功")
+	sendData(c, http.StatusOK, gin.H{"transaction": tx}, "获取自己相关交易成功")
 }
 
 func getBillFromMe(c *gin.Context) {

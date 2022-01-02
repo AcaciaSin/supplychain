@@ -31,7 +31,6 @@ func setLogger(r *gin.Engine, loggerConfig *config.LoggerConfig) {
 }
 
 func runServer(r *gin.Engine, sc *config.ServerConfig) {
-	// TODO: 改用 config 控制是否为发行模式
 	// gin.SetMode(gin.ReleaseMode)
 	handlers.SetRouters(r)
 	url := fmt.Sprintf(":%d", sc.Port)

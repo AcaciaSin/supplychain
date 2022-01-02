@@ -18,7 +18,7 @@ var contractAPI *SupplyChain.SupplyChainSession
 func SetFsicoCli(cli *client.Client) {
 	fiscoCli = cli
 	// TODO: 将合约地址变为config形式
-	addrString := "0xe94effc4b5a3de5785e492e56942b34032d47fef"
+	addrString := "0x9e267b806c7c15766532e7061180bea2e8bbb1cf"
 	fmt.Println("contract addr: ", addrString)
 	contractAddr := common.HexToAddress(addrString)
 	instance, _ := SupplyChain.NewSupplyChain(contractAddr, fiscoCli)

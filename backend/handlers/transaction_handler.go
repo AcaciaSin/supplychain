@@ -3,6 +3,7 @@ package handlers
 import (
 	"math/big"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -117,12 +118,13 @@ func financingConfirm(c *gin.Context) {
 	// 设定一年后到还款日期
 	createdDate := time.Now()
 	endDate := createdDate.AddDate(1, 0, 0)
+	strconv.Itoa(int(createdDate.Unix()))
 	_, receipt, err := contractAPI.ConfirmFinancing(
 		common.HexToAddress(operatorAddr),
 		txID,
 		body["accepted"].(bool),
-		createdDate.String(),
-		endDate.String(),
+		strconv.Itoa(int(createdDate.Unix())),
+		strconv.Itoa(int(endDate.Unix())),
 	)
 	if err != nil {
 		sendData(c, http.StatusInternalServerError, gin.H{}, "区块链执行异常")
@@ -172,8 +174,8 @@ func transferBill(c *gin.Context) {
 		amount,
 		body["message"].(string),
 		billID,
-		createdDate.String(),
-		endDate.String(),
+		strconv.Itoa(int(createdDate.Unix())),
+		strconv.Itoa(int(endDate.Unix())),
 	)
 	if err != nil {
 		sendData(c, http.StatusInternalServerError, gin.H{}, "区块链执行异常")
