@@ -130,7 +130,6 @@ export default function Finance() {
           />
 
           <TextField
-            autoFocus
             margin="normal"
             id="msg"
             label="备注信息"

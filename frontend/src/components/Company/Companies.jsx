@@ -75,7 +75,9 @@ export default function Companies() {
             <TableRow key={idx}>
               <TableCell align="center">{coreCompanies.Name}</TableCell>
               <TableCell align="center">{coreCompanies.Addr}</TableCell>
-              <TableCell align="right">{coreCompanies.CompanyType}</TableCell>
+              <TableCell align="right">
+                {mapCompanyType(coreCompanies.CompanyType)}
+              </TableCell>
               <TableCell align="right">{coreCompanies.Credit}</TableCell>
               <TableCell align="right">{`$${coreCompanies.Funding}`}</TableCell>
             </TableRow>

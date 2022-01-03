@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
         if (response.status === 200) {
           setCurrentAddr({ addr: addr, ...response.data });
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -77,10 +78,8 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          getCoreCompany();
-          getNormalCompany();
-          getBanks();
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -209,11 +208,8 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          getCoreCompany();
-          getMyinfo();
-          getNormalCompany();
-          getBanks();
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -228,11 +224,8 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          getCoreCompany();
-          getMyinfo();
-          getNormalCompany();
-          getBanks();
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -247,11 +240,8 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          getCoreCompany();
-          getMyinfo();
-          getNormalCompany();
-          getBanks();
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -266,13 +256,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
-          getCoreCompany();
-          getNormalCompany();
-          getBanks();
-          getBills();
-          getMyinfo();
-          getMyToBills();
-          getMyFromBills();
+          refreshState();
         }
       })
       .catch((err) => {
@@ -288,13 +272,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
-          getCoreCompany();
-          getNormalCompany();
-          getBanks();
-          getBills();
-          getMyinfo();
-          getMyToBills();
-          getMyFromBills();
+          refreshState();
         }
       })
       .catch((err) => {
@@ -312,13 +290,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
-          getCoreCompany();
-          getNormalCompany();
-          getBanks();
-          getBills();
-          getMyinfo();
-          getMyToBills();
-          getMyFromBills();
+          refreshState();
         }
       })
       .catch((err) => {
@@ -336,14 +308,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
-          getTransactions();
-          getCoreCompany();
-          getNormalCompany();
-          getBanks();
-          getBills();
-          getMyToBills();
-          getMyinfo();
-          getMyFromBills();
+          refreshState();
         }
       })
       .catch((err) => {
@@ -360,14 +325,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
-          getTransactions();
-          getCoreCompany();
-          getNormalCompany();
-          getBanks();
-          getBills();
-          getMyToBills();
-          getMyFromBills();
-          getMyinfo();
+          refreshState();
         }
       })
       .catch((err) => {
@@ -381,6 +339,18 @@ export function AuthProvider({ children }) {
 
   function clearSuccess() {
     setSuccess("");
+  }
+
+  async function refreshState() {
+    await getMyinfo();
+    await getCoreCompany();
+    await getNormalCompany();
+    await getBanks();
+    await getBills();
+    await getMyToBills();
+    await getMyFromBills();
+    await getTransactions();
+    await getMyTransactions();
   }
 
   const value = {
@@ -398,6 +368,7 @@ export function AuthProvider({ children }) {
     success,
     clearError,
     clearSuccess,
+    refreshState,
     login,
     logout,
     getMyinfo,

@@ -22,15 +22,7 @@ export default function Login() {
     clearSuccess,
     clearError,
     error,
-    getMyinfo,
-    getNormalCompany,
-    getCoreCompany,
-    getBanks,
-    getBills,
-    getTransactions,
-    getMyTransactions,
-    getMyFromBills,
-    getMyToBills,
+    // refreshState
   } = useAuth();
   const navigate = useNavigate();
 
@@ -47,15 +39,7 @@ export default function Login() {
 
     try {
       await login(data.get("addr"));
-      await getMyinfo();
-      await getNormalCompany();
-      await getCoreCompany();
-      await getBanks();
-      await getTransactions();
-      await getMyTransactions();
-      await getMyFromBills();
-      await getMyToBills();
-      await getBills();
+      // await refreshState();
       navigate("/dashboard");
     } catch (err) {}
   };

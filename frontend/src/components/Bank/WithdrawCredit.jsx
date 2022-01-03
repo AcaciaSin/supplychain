@@ -12,8 +12,14 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useAuth } from "../../services/auth.context";
 
 export default function WithdrawCredit() {
-  const { error, success, clearSuccess, clearError, withdrawCredit, getBanks } =
-    useAuth();
+  const {
+    error,
+    success,
+    clearSuccess,
+    clearError,
+    withdrawCredit,
+    // refreshState,
+  } = useAuth();
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
 
@@ -49,7 +55,7 @@ export default function WithdrawCredit() {
       setOpen(false);
       setAddr("");
       setAmount(0);
-      await getBanks();
+      // await refreshState();
       if (error) {
         setErrorOpen(true);
       }

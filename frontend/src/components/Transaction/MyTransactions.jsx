@@ -78,6 +78,16 @@ export default function MyTransactions() {
     }
   };
 
+  const mapTxType = (txType) => {
+    if (txType === 0) {
+      return "正常交易";
+    } else if (txType === 1) {
+      return "信用点融资";
+    } else {
+      return "账单融资";
+    }
+  };
+
   return (
     <div>
       <Button variant="outlined" onClick={handleClickOpen}>
@@ -100,9 +110,9 @@ export default function MyTransactions() {
             <Table size="small" aria-label="a dense table">
               <TableHead>
                 <TableRow>
-                  {/* <TableCell align="center"> 交易 ID </TableCell> */}
-                  <TableCell align="center"> 账单 ID </TableCell>
-                  {/* <TableCell align="center"> 交易类型 </TableCell> */}
+                  <TableCell align="center"> 交易 ID </TableCell>
+                  {/* <TableCell align="center"> 账单 ID </TableCell> */}
+                  <TableCell align="center"> 交易类型 </TableCell>
                   <TableCell align="center"> 交易状态 </TableCell>
                   <TableCell align="center"> 付款人地址 </TableCell>
                   <TableCell align="center"> 收款人地址 </TableCell>
@@ -119,11 +129,13 @@ export default function MyTransactions() {
                         "&:last-child td, &:last-child th": { border: 0 },
                       }}
                     >
-                      {/* <TableCell align="center"> {row.TxID} </TableCell> */}
-                      <TableCell align="center"> {row.BillID} </TableCell>
-                      {/* <TableCell align="center"> {row.TxType} </TableCell> */}
+                      <TableCell align="center"> {row.TxID} </TableCell>
+                      {/* <TableCell align="center"> {row.BillID} </TableCell> */}
                       <TableCell align="center">
-                        {mapTxState(row.txState)}
+                        {mapTxType(row.TxType)}
+                      </TableCell>
+                      <TableCell align="center">
+                        {mapTxState(row.TxState)}
                       </TableCell>
                       <TableCell align="center"> {row.From} </TableCell>
                       <TableCell align="center"> {row.To} </TableCell>

@@ -14,8 +14,7 @@ import MuiAlert from "@mui/material/Alert";
 export default function ProvideFunding() {
   const {
     provideFunding,
-    getCoreCompany,
-    getNormalCompany,
+    // refreshState,
     error,
     success,
     clearSuccess,
@@ -55,8 +54,7 @@ export default function ProvideFunding() {
       setOpen(false);
       setAddr("");
       setAmount(0);
-      await getCoreCompany();
-      await getNormalCompany();
+      // await refreshState();
     } catch (err) {}
   };
 
