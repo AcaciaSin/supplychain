@@ -118,7 +118,6 @@ func financingConfirm(c *gin.Context) {
 	// 设定一年后到还款日期
 	createdDate := time.Now()
 	endDate := createdDate.AddDate(1, 0, 0)
-	strconv.Itoa(int(createdDate.Unix()))
 	_, receipt, err := contractAPI.ConfirmFinancing(
 		common.HexToAddress(operatorAddr),
 		txID,
@@ -201,8 +200,8 @@ func transferFunding(c *gin.Context) {
 		common.HexToAddress(body["to"].(string)),
 		amount,
 		body["message"].(string),
-		createdDate.String(),
-		endDate.String(),
+		strconv.Itoa(int(createdDate.Unix())),
+		strconv.Itoa(int(endDate.Unix())),
 	)
 	if err != nil {
 		sendData(c, http.StatusInternalServerError, gin.H{}, "区块链执行异常")
