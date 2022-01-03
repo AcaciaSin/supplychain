@@ -265,7 +265,7 @@ export function AuthProvider({ children }) {
   }
 
   async function confirmFunding(txID, accepted) {
-    await API.post("/transaction/funding/financing/confirm", {
+    await API.post("/transaction/financing/confirm", {
       txID,
       accepted,
     })

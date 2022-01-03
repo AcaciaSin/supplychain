@@ -37,6 +37,21 @@ export default function Bills() {
     }
   };
 
+  const mapTimeStamp = (timeStamp) => {
+    const d = new Date(timeStamp * 1000);
+    return (
+      d.getFullYear() +
+      "/" +
+      (d.getMonth() + 1) +
+      "/" +
+      d.getDate() +
+      " " +
+      d.getHours() +
+      ":" +
+      d.getMinutes()
+    );
+  };
+
   return (
     <React.Fragment>
       <Title> 账单信息 </Title>
@@ -63,8 +78,8 @@ export default function Bills() {
                 <TableCell align="center"> {row.From} </TableCell>
                 <TableCell align="center"> {row.To} </TableCell>
                 <TableCell align="center"> {row.Amount} </TableCell>
-                <TableCell align="center"> {row.CreatedDate} </TableCell>
-                <TableCell align="center"> {row.EndDate} </TableCell>
+                <TableCell align="center"> {mapTimeStamp(row.CreatedDate)} </TableCell>
+                <TableCell align="center"> {mapTimeStamp(row.EndDate)} </TableCell>
                 <TableCell align="center"> {row.Message} </TableCell>
                 <TableCell align="center"> {mapBillLock(row.Lock)} </TableCell>
                 <TableCell align="center">
