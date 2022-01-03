@@ -317,7 +317,7 @@ export function AuthProvider({ children }) {
   }
 
   async function applyBills(to, amount, message) {
-    await API.post("/transaction/transfer/bill", {
+    await API.post("/transaction/transfer/funding", {
       to,
       amount,
       message,
@@ -329,7 +329,7 @@ export function AuthProvider({ children }) {
         }
       })
       .catch((err) => {
-        setError("转让账单失败");
+        setError("签发应收账单失败");
       });
   }
 
