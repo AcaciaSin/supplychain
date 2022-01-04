@@ -360,6 +360,8 @@ function repay(address operatorAddr, uint256 billID) public {
 
 ![image-20220104220527543](.\report\image-20220104220527543.png)
 
+<div style="page-break-after:always;"></div>
+
 ### 签发账单
 
 ![image-20220104220517092](.\report\image-20220104220517092.png)
@@ -367,6 +369,8 @@ function repay(address operatorAddr, uint256 billID) public {
 ### 关联交易
 
 ![image-20220104220354043](.\report\image-20220104220354043.png)
+
+<div style="page-break-after:always;"></div>
 
 ### 自己为支付方的账单
 
