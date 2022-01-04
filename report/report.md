@@ -21,7 +21,7 @@
 
 # 二、方案设计
 
-# 项目要求
+## 项目要求
 
 - 功能一：实现采购商品—签发应收账款交易上链。例如车企从轮胎公司购买一批轮胎并签订应收账款单据。 
 
@@ -31,14 +31,16 @@
 
 - 功能四：应收账款支付结算上链，应收账款单据到期时核心企业向下游企业支付相应的欠款。
 
-# 具体设计
+## 具体设计
 
-## 系统流通资源
+### 系统流通资源
 
 - 信用值（credit）：由于信用本身不可衡量，因此在系统中使用**信用值**可以度量的概念来表示企业的可信用程度。简单来说，信用值表示这个企业在规定有限时间内能够偿还的估计金额。信用值的使用需要经过收款方的同意，才能够生成一笔与信用值相关的账单。
 - 资金（funding）：资金是一个企业或者银行能够在这个系统中自由使用的资源，其可以由另外的系统，将一定的法定货币如人民币、美金等转换为其中的等价的资金值。
 
-## 系统角色
+
+
+### 系统角色
 
 - 系统管理员（administrator）：对整个系统进行管理，控制整体信用值的分发以及监控企业之间的借贷情况。在实际情况中，系统管理员一般由政府等监管机构担任。考虑到这类监管机构拥有其他强制手段来进行系统中的交易控制，因此在系统中只给管理员提供一些更高级的查询功能，但是将不会参与或者干涉其中的交易情况。
 
@@ -76,10 +78,12 @@
   uint256 companyTypeNormal = 0;	// 普通企业
   uint256 companyTypeCore = 1;	// 核心企业
   ```
+  
+  
 
-## 存储设计
+### 存储设计
 
-### Table.sol
+#### Table.sol
 
 FISCO-BCSO 中提供了 `Table.sol` 的合约，这个合约可以作为分布式数据库使用，它实现并提供了数据库的基本 CRUD 功能。因此直接在我们系统中直接引用这个合约，直接作为我们的存储系统。接下来只需要设计相对应的存储结构即可，无需额外部署数据库对地址信息、信用值等账户信息或者交易、账单等进行记录。
 
@@ -96,7 +100,9 @@ tf.createTable(billTable, "1", "billID,from,fromStr,to,toStr,amount,createdDate,
 tf.createTable(roleTable, "addr", "role");
 ```
 
-## 交易事件上链
+
+
+### 交易事件上链
 
 合约中定义了以下 `event`， `event` 为区块链对合约操作进行上链的接口，使用 `emit` 进行调用即可让区块链节点对这个事件打包进入到区块中并广播和共识，这个事件记录到链上。  
 
@@ -113,9 +119,11 @@ event TransferBill(address operatorAddr, address from, address newTo, uint256 bi
 event TransferFunding(address operatorAddr, address to, uint256 amount);	
 ```
 
-## 交易与账单结构
 
-### 交易
+
+### 交易与账单结构
+
+#### 交易
 
 交易在系统中会对关键操作进行记录，可用于提供接口给监管机构进行操作查询。
 
@@ -142,9 +150,9 @@ uint256 txStateRefused = 1;		// 拒绝本次交易
 uint256 txStateAccepted = 2;	// 接收本次交易
 ```
 
-### 账单
+#### 账单
 
-账单仅限于被接受的交易，相当于交易双方签订成功的交易，未还账单才表示双方之间存在借账关系。
+账单仅限于被接受的交易，相当于交易双方签订成功的交易，**账单才表示双方之间存在借账关系**。
 
 ```solidity
 struct Bill {
@@ -171,8 +179,164 @@ uint256 billTypeNormal = 0; // 普通账单
 uint256 billTypeCore =1;	// 核心企业为付款人的账单
 ```
 
-# 数据流图
+<div style="page-break-after:always;"></div>
 
-# 核心代码
+## 核心代码+数据流图
 
-# 界面展示
+### 功能一：实现采购商品—签发应收账款交易上链
+
+商品采购直接进行签发账单即可。签发应收账单时会生成交易和对应的账单，核心企业进行签发时会消耗相应的信用值，以此生成的账单将能够用于向银行进行融资操作，普通企业虽然也能够签发账单，但是由于其在银行中的信用不够，因此这种账单不能够用于融资
+
+```solidity
+// 赊账，签发应收账单
+function transferFunding(address operatorAddr, address addr, uint256 amount, string message, string createdDate, string endDate) public {
+    company = getCompany(operatorAddr);
+    if(company.companyType == companyTypeCore) {
+        require(company.addr == operatorAddr, "transferFunding: this addr is another company");
+        require(company.credit >= amount, "transferFunding: no enough credit");
+        updateCompany(operatorAddr, amount, false, 0, false);
+        insertTx(operatorAddr, addr, amount, message, txTypeCreditFinacing, txStateAccepted, 0);
+        insertBill(operatorAddr, addr, amount, createdDate, endDate, message, billTypeCore);
+    } else {
+        insertTx(operatorAddr, addr, amount, message, txTypeNormal, txStateAccepted, 0);
+        insertBill(operatorAddr, addr, amount, createdDate, endDate, message, billTypeNormal);
+    }
+    emit TransferFunding(operatorAddr, addr, amount);
+}
+```
+
+![image-20220104104601368](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104104601368.png)
+
+### 功能二：实现应收账款的转让上链
+
+账单转让首先会将原有账单变为已还的状态并锁定。随后将其中的交易额进行对应的划分，并生成两份新的账单，这两份账单的收款方为原账单持有人和对应转让的目标。转让账单的操作所生成的两个账单将会保留原账单的性质，即原账单若为核心企业签发，那么新生成账单也可以用于向银行融资，若原账单为普通企业签发则无法进行融资。
+
+```solidity
+    // 账单转移
+function transferBill(address operatorAddr, address to, uint256 amount, string message, uint billID, string createdDate, string endDate) public {
+    bill = getBillByID(billID);
+    require(bill.billState == billStateUnpaid, "transferBill: this bill has been paid");
+    require(bill.lock == billUnlocked, "transferBill: this bill has been locked");
+    require(bill.to == operatorAddr, "transferBill: cannot operator other's bill");
+    require(bill.amount >= amount, "transferBillL: no enough amount");
+    insertTx(operatorAddr, to, amount, message, txTypeNormal, txStateAccepted, billID);
+    updateBill(billID, billLocked, billStatePaid);
+    insertBill(bill.from, operatorAddr, bill.amount - amount, createdDate, endDate, "transfer bill", bill.billType);
+    insertBill(bill.from, to, amount, createdDate, endDate, "transfer bill", bill.billType);
+    emit TransferBill(operatorAddr, operatorAddr, to, billID);
+}
+```
+
+![image-20220104105529789](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104105529789.png)
+
+### 功能三：利用应收账款向银行融资上链
+
+使用账单融资时，银行只能接受由核心企业签发的应收账单。进行融资时首先将对应账单进行锁定，此时会生成一个企业向银行申请融资的交易记录，银行将会对这个交易进行判断，选择同意或者拒绝这个交易。当银行同意这个交易后，将会把原账单设置为已还款，并且生成新的账单，付款方为原账单的付款方。
+
+```solidity
+// 融资
+function financing(address operatorAddr, address bankAddr, uint256 amount, string message, bool useBill, uint256 billID) public {
+    company = getCompany(operatorAddr);
+    string memory targetRole = getRole(bankAddr);
+    require(equal(targetRole, "bank"), "financing: target sholud be a bank");
+    // 核心企业使用信用点融资
+    if(!useBill) {
+        require(company.credit >= amount, "financing: no enough credit");
+        // 扣留信用值，产生未确认交易
+        updateCompany(operatorAddr, amount, false, 0, false);
+        insertTx(operatorAddr, bankAddr, amount, message, txTypeCreditFinacing, txStatePending, 0);
+    } else {
+    // 普通企业使用账单融资
+        bill = getBillByID(billID);
+        // 非核心企业为付款的账单不能用作融资
+        require(bill.billType == billTypeCore, "financing: this bill is not from a core company");
+        require(bill.lock == billUnlocked, "financing: this bill has been locked");
+        require(bill.billState == billStateUnpaid, "financing: this bill has been paid");
+        updateBill(billID, billLocked, billStateUnpaid);
+        insertTx(operatorAddr, bankAddr, bill.amount, message, txTypeBillFinacing, txStatePending, billID);
+    }
+    emit Financing(operatorAddr, bankAddr, useBill, message);
+}
+```
+
+```solidity
+// 融资确认
+function confirmFinancing(address bankAddr, uint256 txID, bool accepted, string createdDate, string endDate) public {
+    transaction = getTxByID(txID);
+    bank = getBank(bankAddr);
+    require(transaction.txState == txStatePending, "ConfirmFinancing: transaction has been confirmed");
+    require(bankAddr == transaction.to, "ConfirmFinancing: cannot confirm other's finacing");
+    if(transaction.txType == txTypeCreditFinacing){
+        if(accepted) {
+            require(bank.funding >= transaction.amount, "ConfirmFinancing: no enough funding");
+            updateBank(transaction.to, 0, false, transaction.amount, false);
+            updateCompany(transaction.from, 0, false, transaction.amount, true);
+            updateTx(transaction, txStateAccepted, transaction.billID);
+            insertBill(transaction.from, transaction.to, transaction.amount, createdDate, endDate, transaction.message, billTypeCore);
+        } else {
+            // 归还锁定的信用点
+            updateCompany(transaction.from, transaction.amount, true, 0, false);
+            updateTx(transaction, txStateRefused, transaction.billID);
+        }
+    } else if(transaction.txType == txTypeBillFinacing) {
+        if(accepted) {
+            require(bank.funding >= transaction.amount, "ConfirmFinancing: no enough funding");
+            bill = getBillByID(transaction.billID);
+            updateBank(transaction.to, 0, false, transaction.amount, false);
+            updateCompany(transaction.from, 0, false, transaction.amount, true);
+            updateTx(transaction, txStateAccepted, transaction.billID);
+            emit TransferBill(bankAddr, bill.from, transaction.to, transaction.billID);
+            // 结束申请贷款的账单，并新建账单
+            updateBill(transaction.billID, billLocked, billStatePaid);
+            insertBill(bill.from, transaction.to, transaction.amount, createdDate, endDate, transaction.message, billTypeCore);
+        } else {
+            // 解锁申请的账单
+            updateBill(transaction.billID, billUnlocked, billStateUnpaid);
+            updateTx(transaction, txStateRefused, transaction.billID);
+        }
+    } else {
+        require(false, "ConfirmFinancing: error transaction type");
+    }
+    emit ConfirmFinancing(bankAddr, txID, accepted);
+}
+```
+
+![image-20220104110832325](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104110832325.png)
+
+### 功能四：应收账款支付结算上链
+
+通过还款渠道，企业能够对相应的账单进行结算。此功能将会检查当前企业的资金是否足以支付这一个账单，若资金充足的则能够将相对应的资金量转移给收款方，并将账单更新为已还款。
+
+```solidity
+// 还款或者还融资
+function repay(address operatorAddr, uint256 billID) public {
+    company = getCompany(operatorAddr);
+    bill = getBillByID(billID);
+    require(operatorAddr == bill.from, "repay: cannot repay other's bill");
+    require(bill.billState == billStateUnpaid, "repay: bill has been repaied");
+    require(company.funding >= bill.amount, "repay: no enough funding");
+    string memory toRole = getRole(bill.to);
+    if(equal(toRole, "bank")) {
+        // 还融资(只有核心银行才会还融资，普通银行使用账单融资不需要还)
+        updateCompany(operatorAddr, bill.amount, true, bill.amount, false);
+        updateBank(bill.to, 0, false, bill.amount, true);
+    } else {
+        // 核心企业恢复信用值，普通企业不需要
+        if(company.companyType == companyTypeNormal) {
+            updateCompany(operatorAddr, 0, false, bill.amount, false);
+        } else {
+            updateCompany(operatorAddr, bill.amount, true, bill.amount, false);
+        }
+        updateCompany(bill.to, 0, false, bill.amount, true);
+    }
+    insertTx(operatorAddr, bill.to, bill.amount, "还账", txTypeRepayment, txStateAccepted, bill.billID);
+    updateBill(billID, billLocked, billStatePaid);
+    emit Repay(operatorAddr, bill.to, bill.amount);
+}
+```
+
+![image-20220104114140635](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104114140635.png)
+
+## 
+
+## 界面展示
