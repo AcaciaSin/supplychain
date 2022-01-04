@@ -13,10 +13,8 @@ import MuiAlert from "@mui/material/Alert";
 
 export default function Payment() {
   const {
-    getBills,
-    getMyToBills,
-    getMyFromBills,
     repay,
+    // refreshState,
     error,
     success,
     clearSuccess,
@@ -50,9 +48,7 @@ export default function Payment() {
       await repay(parseFloat(amount));
       setOpen(false);
       setAmount(0);
-      await getBills();
-      await getMyToBills();
-      await getMyFromBills();
+      // await refreshState();
     } catch (err) {}
   };
 

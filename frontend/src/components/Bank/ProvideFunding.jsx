@@ -12,8 +12,14 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
 export default function ProvideFunding() {
-  const { provideFunding, getBanks, error, success, clearSuccess, clearError } =
-    useAuth();
+  const {
+    provideFunding,
+    // refreshState,
+    error,
+    success,
+    clearSuccess,
+    clearError,
+  } = useAuth();
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [addr, setAddr] = useState("");
@@ -48,7 +54,7 @@ export default function ProvideFunding() {
       setOpen(false);
       setAddr("");
       setAmount(0);
-      await getBanks();
+      // await refreshState();
     } catch (err) {}
   };
 

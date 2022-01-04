@@ -92,6 +92,21 @@ export default function MyToBills() {
     }
   };
 
+  const mapTimeStamp = (timeStamp) => {
+    const d = new Date(timeStamp * 1000);
+    return (
+      d.getFullYear() +
+      "/" +
+      (d.getMonth() + 1) +
+      "/" +
+      d.getDate() +
+      " " +
+      d.getHours() +
+      ":" +
+      d.getMinutes()
+    );
+  };
+
   return (
     <div>
       <Button variant="outlined" onClick={handleClickOpen}>
@@ -140,8 +155,8 @@ export default function MyToBills() {
                       <TableCell align="center">{row.To}</TableCell>
                       <TableCell align="center">{row.Amount}</TableCell>
                       <TableCell align="center">{row.Message}</TableCell>
-                      <TableCell align="center">{row.CreatedDate}</TableCell>
-                      <TableCell align="center">{row.EndDate}</TableCell>
+                      <TableCell align="center">{mapTimeStamp(row.CreatedDate)}</TableCell>
+                      <TableCell align="center">{mapTimeStamp(row.EndDate)}</TableCell>
                       <TableCell align="center">
                         {mapBillLock(row.Lock)}
                       </TableCell>

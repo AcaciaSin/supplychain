@@ -15,8 +15,7 @@ import MuiAlert from "@mui/material/Alert";
 export default function WithdrawCredit() {
   const {
     withdrawCredit,
-    getCoreCompany,
-    getNormalCompany,
+    // refreshState,
     error,
     success,
     clearSuccess,
@@ -56,8 +55,7 @@ export default function WithdrawCredit() {
       setOpen(false);
       setAddr("");
       setAmount(0);
-      await getCoreCompany();
-      await getNormalCompany();
+      // await refreshState();
     } catch (err) {}
   };
 

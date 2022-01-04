@@ -14,8 +14,7 @@ import MuiAlert from "@mui/material/Alert";
 export default function TransferBill() {
   const {
     transferBill,
-    getMyToBills,
-    getMyFromBills,
+    // refreshState,
     error,
     success,
     clearSuccess,
@@ -70,8 +69,7 @@ export default function TransferBill() {
       setBillID(0);
       setMessage("");
       setAmount(0);
-      await getMyToBills();
-      await getMyFromBills();
+      // await refreshState();
     } catch (err) {}
   };
   return (

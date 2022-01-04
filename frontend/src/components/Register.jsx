@@ -20,8 +20,7 @@ export default function Register() {
     success,
     clearSuccess,
     clearError,
-    getCompanies,
-    getBanks,
+    // refreshState,
   } = useAuth();
   const [open, setOpen] = useState(false);
   const [companyType, setCompanyType] = useState(0);
@@ -72,8 +71,7 @@ export default function Register() {
       setAddr("");
       setRole("company");
       setCompanyType(0);
-      await getCompanies();
-      await getBanks();
+      // await refreshState();
     } catch (err) {}
   };
 
@@ -124,6 +122,7 @@ export default function Register() {
           <FormControl fullWidth sx={{ mt: 4 }}>
             <InputLabel id="company-Role-select-label"> 账户角色 </InputLabel>
             <Select
+              autoFocus
               labelId="company-Role-select-label"
               id="company-Role-select"
               value={role}
@@ -152,7 +151,6 @@ export default function Register() {
           </FormControl>
 
           <TextField
-            autoFocus
             margin="normal"
             id="addr"
             label="账户地址"

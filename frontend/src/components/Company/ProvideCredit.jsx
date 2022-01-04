@@ -15,8 +15,7 @@ import MuiAlert from "@mui/material/Alert";
 export default function ProvideCredit() {
   const {
     provideCredit,
-    getCoreCompany,
-    getNormalCompany,
+    // refreshState,
     error,
     success,
     clearSuccess,
@@ -55,8 +54,7 @@ export default function ProvideCredit() {
       setOpen(false);
       setAddr("");
       setAmount(0);
-      await getCoreCompany();
-      await getNormalCompany();
+      // await refreshState();
     } catch (err) {}
   };
 

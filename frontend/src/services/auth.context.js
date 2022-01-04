@@ -6,7 +6,7 @@ const API = axios.create({
   baseURL: "http://114.115.131.113/api/",
   headers: {
     "Content-type": "application/json",
-    "Access-Control-Allow-Origin": "http://114.115.131.113/",
+    "Access-Control-Allow-Origin": "http://114.115.131.113",
     "Access-Control-Allow-Headers":
       "Origin, X-Requested-With, Content-Type, Accept",
     "Access-Control-Allow-Methods": " GET, POST, PATCH, PUT, DELETE, OPTIONS",
@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
         if (response.status === 200) {
           setCurrentAddr({ addr: addr, ...response.data });
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -77,10 +78,8 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          getCoreCompany();
-          getNormalCompany();
-          getBanks();
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -209,10 +208,8 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          // getCoreCompany();
-          // getNormalCompany();
-          // getBanks();
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -227,10 +224,8 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          // getCoreCompany();
-          // getNormalCompany();
-          // getBanks();
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -245,10 +240,8 @@ export function AuthProvider({ children }) {
     })
       .then((response) => {
         if (response.status === 200) {
-          // getCoreCompany();
-          // getNormalCompany();
-          // getBanks();
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -263,6 +256,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -271,13 +265,14 @@ export function AuthProvider({ children }) {
   }
 
   async function confirmFunding(txID, accepted) {
-    await API.post("/transaction/funding/financing/confirm", {
+    await API.post("/transaction/financing/confirm", {
       txID,
       accepted,
     })
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -295,6 +290,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
+          refreshState();
         }
       })
       .catch((err) => {
@@ -312,8 +308,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
-          getTransactions();
-          getBills();
+          refreshState();
         }
       })
       .catch((err) => {
@@ -322,7 +317,7 @@ export function AuthProvider({ children }) {
   }
 
   async function applyBills(to, amount, message) {
-    await API.post("/transaction/transfer/bill", {
+    await API.post("/transaction/transfer/funding", {
       to,
       amount,
       message,
@@ -330,12 +325,11 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (response.status === 200) {
           setSuccess(response.data.msg);
-          getTransactions();
-          getBills();
+          refreshState();
         }
       })
       .catch((err) => {
-        setError("转让账单失败");
+        setError("签发应收账单失败");
       });
   }
 
@@ -345,6 +339,18 @@ export function AuthProvider({ children }) {
 
   function clearSuccess() {
     setSuccess("");
+  }
+
+  async function refreshState() {
+    await getMyinfo();
+    await getCoreCompany();
+    await getNormalCompany();
+    await getBanks();
+    await getBills();
+    await getMyToBills();
+    await getMyFromBills();
+    await getTransactions();
+    await getMyTransactions();
   }
 
   const value = {
@@ -362,6 +368,7 @@ export function AuthProvider({ children }) {
     success,
     clearError,
     clearSuccess,
+    refreshState,
     login,
     logout,
     getMyinfo,

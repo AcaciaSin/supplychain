@@ -39,7 +39,7 @@ export default function Transactions() {
         <TableHead>
           <TableRow>
             <th align="center"> 交易 ID </th>
-            <th align="center"> 账单 ID </th>
+            {/* <th align="center"> 账单 ID </th> */}
             <th align="center"> 类型 </th>
             <th align="center"> 状态 </th>
             <th align="center"> 付款人地址 </th>
@@ -52,7 +52,7 @@ export default function Transactions() {
           {txns.map((txns, idx) => (
             <TableRow key={idx}>
               <TableCell align="center">{txns.TxID}</TableCell>
-              <TableCell align="center">{txns.BillID}</TableCell>
+              {/* <TableCell align="center">{txns.BillID}</TableCell> */}
               <TableCell align="center">{mapTxType(txns.TxType)}</TableCell>
               <TableCell align="center">{mapTxState(txns.TxState)}</TableCell>
               <TableCell align="center">{txns.From}</TableCell>

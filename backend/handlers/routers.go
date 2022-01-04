@@ -21,7 +21,7 @@ func SetRouters(router *gin.Engine) {
 	// 获取信息
 	info := router.Group("/info")
 	{
-		info.GET("/", isLogin, getAccountInfo)
+		info.GET("", isLogin, getAccountInfo)
 		info.GET("/bank", isLogin, getAllBanks)
 		info.GET("/tx", isLogin, getAllTx)
 		info.GET("/mytx", isLogin, getMyTx)

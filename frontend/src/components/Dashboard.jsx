@@ -174,7 +174,7 @@ function DashboardContent() {
                   sx={{
                     p: 2,
                     display: "flex",
-                    flexDirection: "column"
+                    flexDirection: "column",
                   }}
                 >
                   <Infomation />
@@ -187,7 +187,7 @@ function DashboardContent() {
                     sx={{
                       p: 2,
                       display: "flex",
-                      flexDirection: "column"
+                      flexDirection: "column",
                     }}
                   >
                     <MoreInfomation />

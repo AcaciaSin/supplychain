@@ -14,8 +14,7 @@ import MuiAlert from "@mui/material/Alert";
 export default function ApplyBills() {
   const {
     applyBills,
-    getMyToBills,
-    getMyFromBills,
+    // refreshState,
     error,
     success,
     clearSuccess,
@@ -64,8 +63,7 @@ export default function ApplyBills() {
       setToAddr("");
       setMessage("");
       setAmount(0);
-      await getMyToBills();
-      await getMyFromBills();
+      // await refreshState();
     } catch (err) {}
   };
   return (

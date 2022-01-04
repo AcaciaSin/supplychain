@@ -15,11 +15,7 @@ import Switch from "@mui/material/Switch";
 
 export default function ConfirmFunding() {
   const {
-    getTransactions,
-    getMyTransactions,
-    getBills,
-    getMyToBills,
-    getMyFromBills,
+    // refreshState,
     confirmFunding,
     error,
     success,
@@ -59,11 +55,7 @@ export default function ConfirmFunding() {
       await confirmFunding(parseFloat(txID), accepted);
       setOpen(false);
       setTXID(0);
-      await getTransactions();
-      await getMyTransactions();
-      await getBills();
-      await getMyToBills();
-      await getMyFromBills();
+      // await refreshState();
     } catch (err) {}
   };
 
@@ -109,7 +101,7 @@ export default function ConfirmFunding() {
             autoFocus
             margin="normal"
             id="addr"
-            label="账单 ID"
+            label="交易 ID"
             type="text"
             fullWidth
             variant="standard"
