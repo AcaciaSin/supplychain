@@ -337,6 +337,37 @@ function repay(address operatorAddr, uint256 billID) public {
 
 ![image-20220104114140635](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104114140635.png)
 
-## 
+## 加分项说明
+
+- 前端界面：使用 react 框架编写了一套简单易用的用户界面。通过几个简单步骤即可完成转账、赊账和融资等操作
+- 管理员：系统中添加了管理员的角色，令整个系统的运作能够被管理员监控。在系统中虽然没有实现一些具体的功能，但是这个系统设计可以对管理员功能进行扩展，为其添加更多的监管相关的功能。
 
 ## 界面展示
+
+### 登录界面
+
+![image-20220104130945579](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104130945579.png)
+
+### 用户主界面
+
+![image-20220104131041194](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104131041194.png)
+
+### 进行融资
+
+![image-20220104220527543](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104220527543.png)
+
+### 签发账单
+
+![image-20220104220517092](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104220517092.png)
+
+### 关联交易
+
+![image-20220104220354043](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104220354043.png)
+
+### 自己为支付方的账单
+
+![image-20220104220435154](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104220435154.png)
+
+### 银行与企业
+
+![image-20220104220456760](https://raw.githubusercontent.com/Amoukk/pic/master/img/image-20220104220456760.png)
